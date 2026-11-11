@@ -1,0 +1,1180 @@
+{
+	"info": {
+		"_postman_id": "0699e32d-f768-49cd-bd86-db8ffc059e15",
+		"name": "Restful Booker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "greatebooking",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const today = new Date();\r",
+							"const checkin = new Date();\r",
+							"checkin.setDate(today.getDate() + 1);\r",
+							"const checkinDate = checkin.toISOString().split('T')[0];\r",
+							"\r",
+							"const checkout = new Date();\r",
+							"checkout.setDate(checkin.getDate() + 3);\r",
+							"const checkoutDate = checkout.toISOString().split('T')[0];\r",
+							"\r",
+							"pm.environment.set(\"dynamic_checkin\", checkinDate);\r",
+							"pm.environment.set(\"dynamic_checkout\", checkoutDate);\r",
+							"\r",
+							"pm.environment.set(\"calculated_price\", 300);\r",
+							"\r",
+							"console.log('base_url=[' + pm.environment.get('base_url') + ']');\r",
+							"\r",
+							"console.log(\r",
+							"  \"request=\",\r",
+							"  JSON.stringify(pm.request.url.toString())\r",
+							");\r",
+							"\r",
+							"pm.variables.set(\r",
+							"  \"booking_url\",\r",
+							"  pm.environment.get(\"base_url\") + \"/booking\"\r",
+							");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Проверяем статус-код ответа\r",
+							"pm.test(\"Status code is 200 OK - CreateBooking Success\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var responseBody = pm.response.json();\r",
+							"\r",
+							"// Извлекаем сгенерированный ID и сохраняем его автоматически\r",
+							"pm.test(\"Verify and save dynamic Booking ID\", function () {\r",
+							"    pm.expect(responseBody.bookingid).to.be.a('number');\r",
+							"    pm.environment.set(\"saved_booking_id\", responseBody.bookingid);\r",
+							"});\r",
+							"\r",
+							"// Negative tests\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 403\", function () {\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 405\", function () {\r",
+							"    pm.response.to.have.status(405);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 415\", function () {\r",
+							"    pm.response.to.have.status(415);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 429\", function () {\r",
+							"    pm.response.to.have.status(429);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 500\", function () {\r",
+							"    pm.response.to.have.status(500);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 503\", function () {\r",
+							"    pm.response.to.have.status(503);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-mock-response-code",
+						"value": "200",
+						"type": "text"
+					},
+					{
+						"key": "x-mock-response-name",
+						"value": "Create Booking - Not Found",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-mock-response-name",
+						"value": "Create Booking - Forbidden",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-mock-response-name",
+						"value": "Create Booking - Bad request",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-mock-response-name",
+						"value": "Create Booking Unauthorized",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-mock-response-name",
+						"value": "Create Booking Method Not Allowed",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-mock-response-name",
+						"value": "Create Booking Unsupported Media Type",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-mock-response-name",
+						"value": "Create Booking Too Many Requests",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-mock-response-name",
+						"value": "Create Booking Internal Server Error",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-mock-response-name",
+						"value": "Create Booking Service Unavailable",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/booking",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create Booking Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 07 Nov 2026 16:21:39 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "x-srv-trace",
+							"value": "v=1;t=349ebe48ada8f7e8"
+						},
+						{
+							"key": "x-srv-span",
+							"value": "v=1;s=b26d6fa3353e9b3a"
+						},
+						{
+							"key": "access-control-allow-origin",
+							"value": "*"
+						},
+						{
+							"key": "x-ratelimit-limit",
+							"value": "120"
+						},
+						{
+							"key": "x-ratelimit-remaining",
+							"value": "117"
+						},
+						{
+							"key": "x-ratelimit-reset",
+							"value": "1794068547"
+						},
+						{
+							"key": "etag",
+							"value": "W/\"f3-HBiIyJWUHUWX/oPT7Emp7x0Nxms\""
+						},
+						{
+							"key": "vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "cf-cache-status",
+							"value": "DYNAMIC"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Server",
+							"value": "cloudflare"
+						},
+						{
+							"key": "CF-RAY",
+							"value": "a56dac1a4d94f486-TLV"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"bookingid\": 12345,\n    \"booking\": {\n        \"firstname\": \"Israel\",\n        \"lastname\": \"Israeli\",\n        \"totalprice\": 300,\n        \"depositpaid\": true,\n        \"bookingdates\": {\n            \"checkin\": \"2026-11-01\",\n            \"checkout\": \"2026-11-04\"\n        },\n        \"additionalneeds\": \"Breakfast\"\n    }\n}"
+				},
+				{
+					"name": "Create Booking - Forbidden",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-mock-response-code",
+								"value": "400 Missing first name - Bad request",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "404 Create Booking - Not Found",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 09 Nov 2026 18:50:07 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "x-srv-trace",
+							"value": "v=1;t=349ebe48ada8f7e8"
+						},
+						{
+							"key": "x-srv-span",
+							"value": "v=1;s=b26d6fa3353e9b3a"
+						},
+						{
+							"key": "access-control-allow-origin",
+							"value": "*"
+						},
+						{
+							"key": "x-ratelimit-limit",
+							"value": "120"
+						},
+						{
+							"key": "x-ratelimit-remaining",
+							"value": "117"
+						},
+						{
+							"key": "x-ratelimit-reset",
+							"value": "1794068547"
+						},
+						{
+							"key": "etag",
+							"value": "W/\"f3-HBiIyJWUHUWX/oPT7Emp7x0Nxms\""
+						},
+						{
+							"key": "vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "cf-cache-status",
+							"value": "DYNAMIC"
+						},
+						{
+							"key": "Server",
+							"value": "cloudflare"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "CF-RAY",
+							"value": "a57f00523dd89a56-TLV"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"error\": \"Access denied. You do not have permission to perform this action.\"\n}"
+				},
+				{
+					"name": "Create Booking Service Unavailable",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-mock-response-code",
+								"value": "200",
+								"type": "text"
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Not Found",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Forbidden",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Missing first name - Bad request",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"status": "Service Unavailable",
+					"code": 503,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\r\n  \"error\": \"Service unavailable\"\r\n}"
+				},
+				{
+					"name": "Create Booking Unsupported Media Type",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-mock-response-code",
+								"value": "200",
+								"type": "text"
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Not Found",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Forbidden",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Missing first name - Bad request",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"status": "Unsupported Media Type",
+					"code": 415,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\r\n  \"error\": \"Unsupported media type\"\r\n}"
+				},
+				{
+					"name": "Create Booking - Not Found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-mock-response-code",
+								"value": "400",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\r\n  \"error\": \"Resource not found\"\r\n}"
+				},
+				{
+					"name": "Create Booking Bad Request",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-mock-response-code",
+								"value": "400",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 07 Nov 2026 16:21:39 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "x-srv-trace",
+							"value": "v=1;t=349ebe48ada8f7e8"
+						},
+						{
+							"key": "x-srv-span",
+							"value": "v=1;s=b26d6fa3353e9b3a"
+						},
+						{
+							"key": "access-control-allow-origin",
+							"value": "*"
+						},
+						{
+							"key": "x-ratelimit-limit",
+							"value": "120"
+						},
+						{
+							"key": "x-ratelimit-remaining",
+							"value": "117"
+						},
+						{
+							"key": "x-ratelimit-reset",
+							"value": "1794068547"
+						},
+						{
+							"key": "etag",
+							"value": "W/\"f3-HBiIyJWUHUWX/oPT7Emp7x0Nxms\""
+						},
+						{
+							"key": "vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "cf-cache-status",
+							"value": "DYNAMIC"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Server",
+							"value": "cloudflare"
+						},
+						{
+							"key": "CF-RAY",
+							"value": "a56dac1a4d94f486-TLV"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"error\": \"Missing required field: firstname\"\n}"
+				},
+				{
+					"name": "Create Booking Method Not Allowed",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-mock-response-code",
+								"value": "200",
+								"type": "text"
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Not Found",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Forbidden",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Missing first name - Bad request",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"status": "Method Not Allowed",
+					"code": 405,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\r\n  \"error\": \"Method not allowed\"\r\n}"
+				},
+				{
+					"name": "Create Booking Too Many Requests",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-mock-response-code",
+								"value": "200",
+								"type": "text"
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Not Found",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Forbidden",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Missing first name - Bad request",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"status": "Too Many Requests",
+					"code": 429,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\r\n  \"error\": \"Too many requests\"\r\n}"
+				},
+				{
+					"name": "Create Booking Internal Server Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-mock-response-code",
+								"value": "200",
+								"type": "text"
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Not Found",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Forbidden",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Missing first name - Bad request",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\r\n  \"error\": \"Internal server error\"\r\n}"
+				},
+				{
+					"name": "Create Booking Unauthorized",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-mock-response-code",
+								"value": "200",
+								"type": "text"
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Not Found",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Create Booking - Forbidden",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "x-mock-response-name",
+								"value": "Missing first name - Bad request",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Israel\",\r\n    \"lastname\": \"Israeli\",\r\n    \"totalprice\": {{calculated_price}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{dynamic_checkin}}\",\r\n        \"checkout\": \"{{dynamic_checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\r\n  \"error\": \"Unauthorized access\"\r\n}"
+				}
+			]
+		},
+		{
+			"name": "GETbooking",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// 1. חישוב תאריך צ'ק-אין (מחר)\r",
+							"const today = new Date();\r",
+							"const checkin = new Date();\r",
+							"checkin.setDate(today.getDate() + 1);\r",
+							"const checkinDate = checkin.toISOString().split('T')[0];\r",
+							"\r",
+							"// 2. חישוב תאריך צ'ק-אאוט (מחר + 3 ימים)\r",
+							"const checkout = new Date();\r",
+							"checkout.setDate(checkin.getDate() + 3);\r",
+							"const checkoutDate = checkout.toISOString().split('T')[0];\r",
+							"\r",
+							"// 3. שמירת התאריכים כמשתנים דינמיים בפוסטמן\r",
+							"pm.environment.set(\"dynamic_checkin\", checkinDate);\r",
+							"pm.environment.set(\"dynamic_checkout\", checkoutDate);\r",
+							"pm.environment.set(\"calculated_price\", 300);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 OK\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response is not empty\", function () {\r",
+							"    pm.expect(response).to.not.be.empty;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Firstname exists\", function () {\r",
+							"    pm.expect(response.firstname).to.exist;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Lastname exists\", function () {\r",
+							"    pm.expect(response.lastname).to.exist;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total price is numeric\", function () {\r",
+							"    pm.expect(response.totalprice).to.be.a(\"number\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Deposit paid is boolean\", function () {\r",
+							"    pm.expect(response.depositpaid).to.be.a(\"boolean\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check-in date exists\", function () {\r",
+							"    pm.expect(response.bookingdates.checkin).to.exist;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check-out date exists\", function () {\r",
+							"    pm.expect(response.bookingdates.checkout).to.exist;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is correct\", function () {\r",
+							"    pm.expect(response.error).to.eql(\"Booking not found\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {},
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-mock-response-name",
+						"value": "Get Booking - Not Found",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/booking/{{saved_booking_id}}\n\n\n\n\n",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"booking",
+						"{{saved_booking_id}}\n\n\n\n\n"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "GETbooking",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "/booking/12345\n\n\n\n\n",
+							"path": [
+								"booking",
+								"12345\n\n\n\n\n"
+							]
+						}
+					},
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 31 Oct 2026 17:54:00 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "x-srv-trace",
+							"value": "v=1;t=652adb300fd425b8"
+						},
+						{
+							"key": "x-srv-span",
+							"value": "v=1;s=b082c02afa8967ca"
+						},
+						{
+							"key": "access-control-allow-origin",
+							"value": "*"
+						},
+						{
+							"key": "x-ratelimit-limit",
+							"value": "120"
+						},
+						{
+							"key": "x-ratelimit-remaining",
+							"value": "119"
+						},
+						{
+							"key": "x-ratelimit-reset",
+							"value": "1793469300"
+						},
+						{
+							"key": "etag",
+							"value": "W/\"f3-HBiIyJWUHUWX/oPT7Emp7x0Nxms\""
+						},
+						{
+							"key": "vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "set-cookie",
+							"value": "__cf_bm=wpsKInloLvzGykx_daO3V5btfjNjmYqcWtLyog4glss-1793469240.4629228-1.0.1.1-GtsfiqCnrkV2HOReavAvjLfgfhaFH2delm_ktjlwkBzgHKMUzrOkQpcaTIpTaibfKaJ9ohLSOTXuj6ykZtwEOjK4317qXZa9qQRUtuKo6Fop3Epo.BTcpgOkvViZfVyU; HttpOnly; SameSite=None; Secure; Path=/; Domain=pstmn.io; Expires=Sat, 31 Oct 2026 18:24:00 GMT"
+						},
+						{
+							"key": "cf-cache-status",
+							"value": "DYNAMIC"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Server",
+							"value": "cloudflare"
+						},
+						{
+							"key": "CF-RAY",
+							"value": "a53485c0eb0bbe97-TLV"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"firstname\": \"Israel\",\n    \"lastname\": \"Israeli\",\n    \"totalprice\": 300,\n    \"depositpaid\": true,\n    \"bookingdates\": {\n        \"checkin\": \"2026-11-01\",\n        \"checkout\": \"2026-11-04\"\n    },\n    \"additionalneeds\": \"Breakfast\"\n}\n"
+				},
+				{
+					"name": "Get Booking - Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking/999999\n\n\n\n\n",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking",
+								"999999\n\n\n\n\n"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Wed, 11 Nov 2026 18:34:55 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "x-srv-trace",
+							"value": "v=1;t=652adb300fd425b8"
+						},
+						{
+							"key": "x-srv-span",
+							"value": "v=1;s=b082c02afa8967ca"
+						},
+						{
+							"key": "access-control-allow-origin",
+							"value": "*"
+						},
+						{
+							"key": "x-ratelimit-limit",
+							"value": "120"
+						},
+						{
+							"key": "x-ratelimit-remaining",
+							"value": "119"
+						},
+						{
+							"key": "x-ratelimit-reset",
+							"value": "1793469300"
+						},
+						{
+							"key": "etag",
+							"value": "W/\"f3-HBiIyJWUHUWX/oPT7Emp7x0Nxms\""
+						},
+						{
+							"key": "vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "cf-cache-status",
+							"value": "DYNAMIC"
+						},
+						{
+							"key": "Server",
+							"value": "cloudflare"
+						},
+						{
+							"key": "set-cookie",
+							"value": "__cf_bm=VWCaCOiQzh3Yyyb0Np.25sbd5idoF9Eno61H9EteY9E-1794422095.4843247-1.0.1.1-EJb1e6G_k_zISBRfE7h4JcEvBbhewiZq9UllDbv5LZhI9XRh2JPmTSDLL2tq_we.AEREF3v7VcNZ6pYlxrl8t3aNEmc2ROst.Q26Zo.bLc61I3apxbcREATI_9mINbL1; HttpOnly; SameSite=None; Partitioned; Secure; Path=/; Domain=pstmn.io; Expires=Wed, 11 Nov 2026 19:04:55 GMT"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "CF-RAY",
+							"value": "a58f64d0ca8fdc03-TLV"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"error\": \"Booking not found\"\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "calculated_price",
+			"value": ""
+		}
+	]
+}
